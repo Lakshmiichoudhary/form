@@ -1,24 +1,43 @@
 var form = document.getElementById('addForm');
 var itemList = document.getElementById('items');
+var filter = document.getElementById('filter');
 
 // Form submit event
 form.addEventListener('submit', addItem);
 // Delete event
 itemList.addEventListener('click', removeItem);
+// Filter event
+filter.addEventListener('keyup', filterItems);
 
 // Add item
-function addItem(e){
+function addItem(e) {
   e.preventDefault();
 
-  // Get input value
-  var newItem = document.getElementById('item').value;
+  // Get input values
+  var newItemName = document.getElementById('itemName').value;
+  var newItemDescription = document.getElementById('itemDescription').value;
 
   // Create new li element
   var li = document.createElement('li');
   // Add class
   li.className = 'list-group-item';
-  // Add text node with input value
-  li.appendChild(document.createTextNode(newItem));
+  
+  // Create a div for item info
+  var itemInfo = document.createElement('div');
+  itemInfo.className = 'item-info';
+  
+  // Add text node with input value for item name
+  var nameNode = document.createElement('h4');
+  nameNode.appendChild(document.createTextNode(newItemName));
+  itemInfo.appendChild(nameNode);
+  
+  // Add text node with input value for item description
+  var descriptionNode = document.createElement('p');
+  descriptionNode.appendChild(document.createTextNode(newItemDescription));
+  itemInfo.appendChild(descriptionNode);
+
+  // Append item info div to li
+  li.appendChild(itemInfo);
 
   // Create del button element
   var deleteBtn = document.createElement('button');
@@ -35,14 +54,31 @@ function addItem(e){
   // Append li to list
   itemList.appendChild(li);
 }
+
 // Remove item
-function removeItem(e){
-    if(e.target.classList.contains('delete')){
-      if(confirm('Are You Sure?')){
-        var li = e.target.parentElement;
-        itemList.removeChild(li);
-      }
+function removeItem(e) {
+  if (e.target.classList.contains('delete')) {
+    if (confirm('Are You Sure?')) {
+      var li = e.target.parentElement;
+      itemList.removeChild(li);
     }
   }
-  
-  
+}
+
+// Filter items
+function filterItems(e) {
+  var text = e.target.value.toLowerCase();
+  var items = itemList.getElementsByClassName('list-group-item');
+
+  Array.from(items).forEach(function(item) {
+    var itemInfo = item.querySelector('.item-info');
+    var itemName = itemInfo.querySelector('h4').textContent.toLowerCase();
+    var itemDescription = itemInfo.querySelector('p').textContent.toLowerCase();
+    
+    if (itemName.indexOf(text) !== -1 || itemDescription.indexOf(text) !== -1) {
+      item.style.display = 'block';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+}
